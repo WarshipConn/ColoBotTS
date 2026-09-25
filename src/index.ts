@@ -1,29 +1,24 @@
-import http from "node:http";
+import express from "express";
 
+const app = express();
 const port = Number(process.env.PORT) || 3000;
 
-const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
-  console.log(req.url);
+// Optional: parse JSON request bodies (useful once you add POST/PUT routes)
+app.use(express.json());
 
-  const path = req.url?.split("?")[0] ?? "/";
-
-  console.log(path);
-  
-  if (req.method === "GET" && (path === "/" || path === "/health")) {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ ok: true }));
-    return;
-  }
-  else if (req.method === "GET" && (path === "/hello")) {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ field1: "hello test", field2: "yeah"}));
-    return;
-  }
-
-  res.writeHead(404, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ error: "Not found" }));
+app.get(["/", "/health"], (_req, res) => {
+  res.json({ ok: true });
 });
 
-server.listen(port, "0.0.0.0", () => {
+app.get("/hello", (_req, res) => {
+  res.json({ field1: "hello test", field2: "yeah" });
+});
+
+// Catch-all for unmatched routes (Express 5: use middleware, not app.all("*"))
+app.use((_req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+app.listen(port, "0.0.0.0", () => {
   console.log(`Listening on ${port}`);
 });
