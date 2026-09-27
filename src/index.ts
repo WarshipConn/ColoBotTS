@@ -19,8 +19,6 @@ app.get("/FWstatus", async (_req :Request, res: Response) => {
       }
     )
 
-    console.log(process.env.RBLX_API_KEY)
-
     const rblxResponse = await fetch(`https://apis.roblox.com/datastores/v1/universes/${UNIVERSE_ID}/standard-datastores/datastore/entries/entry?${params}`,
       {
         method: "GET",
